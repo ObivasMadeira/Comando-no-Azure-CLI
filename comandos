@@ -1,0 +1,26 @@
+Comando que utilizo no meu dia-dia no azure CLI
+
+Aqui está um exemplo de como usar o Azure CLI para atualizar a configuração WEBSITE_TIME_ZONE em várias APIs no Azure:
+
+az login #logar no azure via powershell
+
+az account list #listar sua contas no azure
+
+az account set -s <subscription_id> #defina a assinatura desejada
+
+$time_zone = "America/New_York" # Defina o fuso horário desejado
+
+$api_resources = @("api1", "api2", "api3") # Lista de nomes de recursos de API
+
+# Loop para atualizar cada API
+foreach ($api_resource in $api_resources) {
+  az webapp config appsettings set --name $api_resource --resource-group "nome_do_grupo_de_recursos" --settings WEBSITE_TIME_ZONE=$time_zone
+}
+Certifique-se de substituir "nome_do_grupo_de_recursos" pelo nome real do grupo de recursos onde suas APIs estão localizadas. Além disso, ajuste a lista de api_resources para incluir os nomes das suas APIs.
+
+Isso automatizará a atualização da configuração WEBSITE_TIME_ZONE em várias APIs usando o Azure CLI. Lembre-se de revisar e adaptar o código de acordo com a sua configuração específica do Azure.
+
+----------------------------------------------------------------------------------------------------------------------
+ Listar todas as api do ambiente com o seu nome e estado
+
+az webapp list --query '[].{Name:name, State:state}' --output table
