@@ -24,3 +24,22 @@ Isso automatizará a atualização da configuração WEBSITE_TIME_ZONE em vária
  Listar todas as api do ambiente com o seu nome e estado
 
 az webapp list --query '[].{Name:name, State:state}' --output table
+
+==========================================================================
+
+Listar tods as secret do vault
+az keyvault secret list --vault-name $KEY_VAULT_NAME --query "[].id" -o tsv
+
+Obter tds os segredos
+az keyvault secret list --vault-name $KEY_VAULT_NAME --query "[].id" -o tsv
+
+Exporte seus valores para um txt
+secrets=$(az keyvault secret list --vault-name $KEY_VAULT_NAME --query "[].id" -o tsv)
+
+for secret in $secrets; do
+    secret_name=$(basename $secret)
+    secret_value=$(az keyvault secret show --vault-name $KEY_VAULT_NAME --name $secret_name --query "value" -o tsv)
+    echo "$secret_name=$secret_value"
+done
+==========================================================================
+
