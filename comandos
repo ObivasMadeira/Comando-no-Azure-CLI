@@ -42,4 +42,10 @@ for secret in $secrets; do
     echo "$secret_name=$secret_value"
 done
 ==========================================================================
+Comando para listar API de um resource group
+
+az resource list --resource-group rg-benefits-prd --query "[?contains(name, 'app')].name" --output tsv
+
+==========================================================================
+
 
