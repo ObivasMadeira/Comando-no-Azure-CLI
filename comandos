@@ -47,5 +47,50 @@ Comando para listar API de um resource group
 az resource list --resource-group rg-benefits-prd --query "[?contains(name, 'app')].name" --output tsv
 
 ==========================================================================
+Scrip via azure cli para escannear repositório atrás de informações chumbadas.
 
+Realizar uma verificação nos repositórios para detectar possíveis variáveis sensíveis "chumbadas" no código
 
+Scrip para scannear os repositórios, é necessário um access token para liberar o  acesso ao scrip
+
+export AZURE_PAT="valoracccesstoken"
+
+# Variáveis
+ORG_URL="https://dev.azure.com/biz-pay/"
+PROJECT_NAME="All-in-One"
+PAT_TOKEN=$AZURE_PAT
+SEARCH_TERM="azurewebsites"
+
+# Função para clonar e buscar em repositórios
+function clone_and_search() {
+    local repo_name=$1
+    local search_term=$2
+
+    echo "Clonando e buscando no repositório: $repo_name"
+
+    # Formatar a URL com o PAT para autenticação
+    REPO_URL=$(az repos show --org $ORG_URL --project $PROJECT_NAME --repository $repo_name --query "remoteUrl" -o tsv)
+    REPO_URL=${REPO_URL/https:\/\/https:\/\/:/$PAT_TOKEN@}
+
+    # Clonar o repositório
+    git clone $REPO_URL
+
+    # Entrar no diretório do repositório clonado
+    cd $repo_name
+
+    # Buscar o termo no repositório
+    grep -r "$search_term" .
+
+    # Voltar ao diretório anterior
+    cd ..
+}
+
+# Listar repositórios
+repos=$(az repos list --org $ORG_URL --project $PROJECT_NAME --query "[].name" -o tsv)
+
+for repo in $repos; do
+    clone_and_search "$repo" "$SEARCH_TERM"
+done
+
+# Limpar a pasta temporária
+rm -rf temp_repo_search
